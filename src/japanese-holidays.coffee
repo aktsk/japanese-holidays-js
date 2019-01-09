@@ -11,12 +11,12 @@
 shiftDate = (date, year, mon, day, hour, min, sec, msec) ->
     # まずは日付以下の部分を msec に直して処理する
     res = new Date(2000,0,1)
-    res.setTime( date.getTime() + 
-        (((( day ? 0 ) * 24 + ( hour ? 0 )) * 60 + ( min ? 0 )) * 60 + 
+    res.setTime( date.getTime() +
+        (((( day ? 0 ) * 24 + ( hour ? 0 )) * 60 + ( min ? 0 )) * 60 +
                                 ( sec ? 0 )) * 1000 + ( msec ? 0 )
     )
     # 年と月はちょっと面倒な処理になる
-    res.setFullYear res.getFullYear() + ( year ? 0 ) + 
+    res.setFullYear res.getFullYear() + ( year ? 0 ) +
        Math.floor( ( res.getMonth() + ( mon ? 0 ) ) / 12 )
     res.setMonth ( ( res.getMonth() + ( mon ? 0 ) ) % 12 + 12 ) % 12
     return res
@@ -102,8 +102,18 @@ definition = [
     [ "文化の日",                 simpleHoliday(11,  3), 1948       ],
     [ "即位礼正殿の儀",           simpleHoliday(11, 12), 1990, 1990 ],
     [ "勤労感謝の日",             simpleHoliday(11, 23), 1948       ],
-    [ "天皇誕生日",               simpleHoliday(12, 23), 1989       ],
+    [ "天皇誕生日",               simpleHoliday(12, 23), 1989, 2018 ],
 ]
+
+# MEMO: 2019年の祝日追加 暫定処置
+# 祝日法第3条第3項による休日（祝日と祝日に挟まれた平日を祝日とする）とかの対応が本来必要なので、2020年以降は未対応。
+# ライブラリアップデートしたら差し替える
+definition.push(
+  [ "天皇の即位の日",           simpleHoliday(5, 1), 2019, 2019 ],
+  [ "祝日法第3条第3項による休日", simpleHoliday(4, 30), 2019, 2019 ],
+  [ "祝日法第3条第3項による休日", simpleHoliday(5, 2), 2019, 2019 ],
+  [ "即位礼正殿の儀の日", simpleHoliday(10, 22), 2019, 2019 ]
+)
 
 
 # 休日を与えるとその振替休日を返す
@@ -175,7 +185,7 @@ getHolidaysOf = (y, furikae) ->
         d = getJDate(holiday)
         wo_furikae[ [m,d] ] = entry[0]
     holidays[false][y] = wo_furikae
-    
+
     # 国民の休日を追加する
     kokuminHolidays = []
     for month_day of wo_furikae
@@ -187,7 +197,7 @@ getHolidaysOf = (y, furikae) ->
             kokuminHolidays.push([m,d])
     for holiday in kokuminHolidays
         wo_furikae[holiday] = "国民の休日"
-    
+
     # 振替休日を追加する
     w_furikae = {}
     for month_day, name of wo_furikae
